@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Función para verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Función para obtener el rol del usuario
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Función para verificar si el usuario es admin
+    function isAdmin() {
+      return getUserRole() == 'admin';
+    }
+    
+    // Reglas para la colección de usuarios
+    match /users/{userId} {
+      // Los usuarios pueden leer su propio documento
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == userId || isAdmin());
+      
+      // Solo los admins pueden crear nuevos usuarios
+      allow create: if isAdmin();
+      
+      // Los usuarios pueden actualizar su propio documento, los admins pueden actualizar cualquier documento
+      allow update: if isAuthenticated() && 
+        (request.auth.uid == userId || isAdmin());
+      
+      // Solo los admins pueden eliminar usuarios
+      allow delete: if isAdmin();
+    }
+    
+    // Reglas para otras colecciones (puedes agregar más según necesites)
+    match /{document=**} {
+      // Por defecto, denegar acceso a todas las colecciones no especificadas
+      allow read, write: if false;
+    }
+  }
+} 

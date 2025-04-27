@@ -1,17 +1,17 @@
-import React from 'react'
-import { View } from 'react-native'
-import DataList from './DataList';
-import AppBar from './AppBar';
-import Login from './pages/Login';
+import React from "react";
+import { View } from "react-native";
+import DataList from "./DataList";
+import AppBar from "./AppBar";
+import Login from "./pages/Login";
 
 const Main = () => {
   return (
-    <View style={{flex: 1, flexGrow: 3}}>
+    <View style={{ flex: 1, flexGrow: 3 }}>
       <AppBar />
-       {/* <Login /> */}
-         <DataList />
+      <Login />
+      <DataList />
     </View>
-  )
-}
+  );
+};
 
-export default Main
+export default Main;
